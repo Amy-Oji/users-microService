@@ -1,4 +1,4 @@
-package com.amyojiakor.UserService;
+package com.amyojiakor.userMicroService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
