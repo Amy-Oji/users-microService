@@ -1,18 +1,21 @@
 package com.amyojiakor.userMicroService.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "_users")
 public class User {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String firstName;
     private String lastName;
+    private String email;
     private String password;
+    private Roles role;
 }

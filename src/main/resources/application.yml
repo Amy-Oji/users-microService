@@ -1,9 +1,11 @@
 server:
-  port: 8084
+  port: 8081
 
 spring:
+  application:
+    name: user-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/security
+    url: jdbc:postgresql://localhost:5432/users_db
     username: postgres
     password: 123456
     driver-class-name: org.postgresql.Driver
