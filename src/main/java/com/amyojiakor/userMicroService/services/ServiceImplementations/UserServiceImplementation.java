@@ -8,6 +8,7 @@ import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
 import com.amyojiakor.userMicroService.security.jwt.JwtUtils;
 import com.amyojiakor.userMicroService.security.user.AppUserDetails;
+import com.amyojiakor.userMicroService.services.AccountService;
 import com.amyojiakor.userMicroService.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
