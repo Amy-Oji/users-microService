@@ -1,4 +1,4 @@
-package com.amyojiakor.userMicroService.apiConfig;
+package com.amyojiakor.userMicroService.appConfig;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;

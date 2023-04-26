@@ -2,13 +2,15 @@ package com.amyojiakor.userMicroService.services.ServiceImplementations;
 
 import com.amyojiakor.userMicroService.models.entities.Roles;
 import com.amyojiakor.userMicroService.models.entities.User;
+import com.amyojiakor.userMicroService.models.entities.UserAccounts;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
+import com.amyojiakor.userMicroService.models.payloads.CurrentUserResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
+import com.amyojiakor.userMicroService.respositories.UserAccountRepository;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
 import com.amyojiakor.userMicroService.security.jwt.JwtUtils;
 import com.amyojiakor.userMicroService.security.user.AppUserDetails;
-import com.amyojiakor.userMicroService.services.AccountService;
 import com.amyojiakor.userMicroService.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +31,7 @@ public class UserServiceImplementation implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
+    private final UserAccountRepository userAccountRepository;
 
 
     @Override
@@ -98,15 +102,18 @@ public class UserServiceImplementation implements UserService {
         return matcher.matches();
     }
 
-    public User getCurrentUser() throws Exception {
+    public CurrentUserResponse getCurrentUser() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new Exception("User not authenticated");
         }
         AppUserDetails userDetails = (AppUserDetails) authentication.getPrincipal();
-        return userRepository.findByEmail(userDetails.getUsername())
+
+        var user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new Exception("User not found"));
+
+        List<UserAccounts> allUserAccounts = user.getAccounts();
+
+        return new CurrentUserResponse(user.getFirstName(), user.getLastName(), user.getEmail(),  allUserAccounts);
     }
-
-
 }

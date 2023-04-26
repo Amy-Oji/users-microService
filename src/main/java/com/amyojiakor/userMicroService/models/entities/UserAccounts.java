@@ -2,6 +2,7 @@ package com.amyojiakor.userMicroService.models.entities;
 
 import com.amyojiakor.userMicroService.models.enums.AccountType;
 import com.amyojiakor.userMicroService.models.enums.CurrencyCode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,20 @@ public class UserAccounts {
 
     private BigDecimal accountBalance;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Override
+    public String toString() {
+        return "UserAccounts{" +
+                "id=" + id +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", accountType=" + accountType +
+                ", currencyCode=" + currencyCode +
+                ", accountBalance=" + accountBalance +
+                '}';
+    }
+
 }

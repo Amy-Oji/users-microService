@@ -1,17 +1,11 @@
 package com.amyojiakor.userMicroService.services.ServiceImplementations;
 
-import com.amyojiakor.userMicroService.apiConfig.ApiConfig;
-import com.amyojiakor.userMicroService.models.entities.User;
-import com.amyojiakor.userMicroService.models.entities.UserAccounts;
-import com.amyojiakor.userMicroService.models.payloads.AccountRequest;
-import com.amyojiakor.userMicroService.models.payloads.AccountResponse;
-import com.amyojiakor.userMicroService.models.payloads.CreateAccountPayLoad;
-import com.amyojiakor.userMicroService.models.payloads.UpdateAccountRequest;
+import com.amyojiakor.userMicroService.appConfig.ApiConfig;
+import com.amyojiakor.userMicroService.models.payloads.*;
 import com.amyojiakor.userMicroService.respositories.UserAccountRepository;
 import com.amyojiakor.userMicroService.services.AccountService;
 import com.amyojiakor.userMicroService.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,17 +25,17 @@ public class AccountServiceImplementation implements AccountService {
     public AccountResponse createBankAccount(AccountRequest accountRequest) throws Exception {
         if(SecurityContextHolder.getContext().getAuthentication() == null) throw new Exception("User is not authenticated");
 
-        User user = userService.getCurrentUser();
+        CurrentUserResponse user = userService.getCurrentUser();
 
         CreateAccountPayLoad accountPayLoad = new CreateAccountPayLoad(
-                user.getFirstName() + " " + user.getLastName(),
+                user.firstName() + " " + user.lastName(),
                 accountRequest.accountType(),
                 accountRequest.currencyCode());
         AccountResponse account = restTemplate.postForObject(apiConfig.getAccountServiceBaseUrl()+"create-account", accountPayLoad,  AccountResponse.class);
 
-        if(account != null){
-            setUserAccount(user, account);
-        }
+//        if(account != null){
+//            setUserAccount(user, account);
+//        }
 
         return account;
     }
@@ -52,13 +46,13 @@ public class AccountServiceImplementation implements AccountService {
         return null;
     }
 
-    private void setUserAccount (User user, AccountResponse accountResponse ){
-        UserAccounts userAccounts = new UserAccounts();
-        userAccounts.setUser(user);
-        userAccounts.setAccountBalance(accountResponse.accountBalance());
-        userAccounts.setAccountNumber(accountResponse.accountNumber());
-        userAccounts.setAccountType(accountResponse.accountType());
-        userAccounts.setCurrencyCode(accountResponse.currencyCode());
-        accountRepository.save(userAccounts);
-    }
+//    private void setUserAccount (User user, AccountResponse accountResponse ){
+//        UserAccounts userAccounts = new UserAccounts();
+//        userAccounts.setUser(user);
+//        userAccounts.setAccountBalance(accountResponse.accountBalance());
+//        userAccounts.setAccountNumber(accountResponse.accountNumber());
+//        userAccounts.setAccountType(accountResponse.accountType());
+//        userAccounts.setCurrencyCode(accountResponse.currencyCode());
+//        accountRepository.save(userAccounts);
+//    }
 }

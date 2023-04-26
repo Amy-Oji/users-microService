@@ -2,14 +2,12 @@ package com.amyojiakor.userMicroService.controller;
 
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
+import com.amyojiakor.userMicroService.models.payloads.CurrentUserResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
 import com.amyojiakor.userMicroService.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -26,6 +24,11 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest authRequest) throws Exception {
         return ResponseEntity.ok(authenticationService.login(authRequest));
+    }
+
+    @GetMapping("/get-current-user-details")
+    public ResponseEntity<CurrentUserResponse> getUser() throws Exception {
+        return ResponseEntity.ok(authenticationService.getCurrentUser());
     }
 
 }
