@@ -4,5 +4,5 @@ import com.amyojiakor.userMicroService.models.entities.UserAccounts;
 
 import java.util.List;
 
-public record CurrentUserResponse (String firstName, String lastName, String email, List<UserAccounts> userAccounts){
+public record CurrentUserDetailsResponse(String firstName, String lastName, String email, List<UserAccounts> userAccounts){
 }

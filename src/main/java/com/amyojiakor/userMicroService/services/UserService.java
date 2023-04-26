@@ -1,14 +1,11 @@
 package com.amyojiakor.userMicroService.services;
 
-import com.amyojiakor.userMicroService.models.entities.User;
-import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
-import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
-import com.amyojiakor.userMicroService.models.payloads.CurrentUserResponse;
-import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
+import com.amyojiakor.userMicroService.models.payloads.AccountResponse;
+import com.amyojiakor.userMicroService.models.payloads.CurrentUserDetailsResponse;
+import com.amyojiakor.userMicroService.models.payloads.UpdateAccountRequest;
 
 public interface UserService {
-    AuthenticationResponse registerUser(RegisterRequest registerRequest) throws Exception;
-    AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws Exception;
-    CurrentUserResponse getCurrentUser() throws Exception;
+    AccountResponse updateBankAccount(UpdateAccountRequest accountRequest);
+    CurrentUserDetailsResponse getCurrentUserDetails() throws Exception;
 
 }

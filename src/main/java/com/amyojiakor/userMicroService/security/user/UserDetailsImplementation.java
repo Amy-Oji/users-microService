@@ -1,7 +1,6 @@
 package com.amyojiakor.userMicroService.security.user;
 
 import com.amyojiakor.userMicroService.models.entities.User;
-import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,13 +14,13 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 @Component
-public class AppUserDetails implements UserDetails {
+public class UserDetailsImplementation implements UserDetails {
 
     private String email;
     private String password;
     private List<GrantedAuthority> authorities;
 
-    public AppUserDetails(User user){
+    public UserDetailsImplementation(User user){
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));

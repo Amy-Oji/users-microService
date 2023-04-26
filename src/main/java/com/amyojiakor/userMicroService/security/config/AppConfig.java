@@ -1,6 +1,6 @@
 package com.amyojiakor.userMicroService.security.config;
 
-import com.amyojiakor.userMicroService.security.user.AppUserDetailsService;
+import com.amyojiakor.userMicroService.security.user.UserDetailsServiceImplementation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
-    private final AppUserDetailsService appUserDetailsService;
+    private final UserDetailsServiceImplementation userDetailsServiceImplementation;
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(appUserDetailsService);
+        authenticationProvider.setUserDetailsService(userDetailsServiceImplementation);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }

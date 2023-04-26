@@ -1,12 +1,11 @@
 package com.amyojiakor.userMicroService.security.jwt;
 
-import com.amyojiakor.userMicroService.security.user.AppUserDetails;
+import com.amyojiakor.userMicroService.security.user.UserDetailsImplementation;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +29,13 @@ public class JwtUtils {
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
     }
-    public String generateToken(AppUserDetails userDetails){
+    public String generateToken(UserDetailsImplementation userDetails){
         Map<String, Object> claims = new HashMap<>();
         claims.put("Authorities", userDetails.getAuthorities());
         return generateToken(claims, userDetails);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, AppUserDetails userDetails){
+    public String generateToken(Map<String, Object> extraClaims, UserDetailsImplementation userDetails){
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

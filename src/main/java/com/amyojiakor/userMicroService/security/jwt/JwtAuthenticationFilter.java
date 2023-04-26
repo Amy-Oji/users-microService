@@ -1,6 +1,6 @@
 package com.amyojiakor.userMicroService.security.jwt;
 
-import com.amyojiakor.userMicroService.security.user.AppUserDetailsService;
+import com.amyojiakor.userMicroService.security.user.UserDetailsServiceImplementation;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
-    private final AppUserDetailsService userDetailsService;
+    private final UserDetailsServiceImplementation userDetailsService;
     @Override
     protected void doFilterInternal(
            @NonNull HttpServletRequest request,

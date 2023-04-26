@@ -2,9 +2,9 @@ package com.amyojiakor.userMicroService.controller;
 
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
-import com.amyojiakor.userMicroService.models.payloads.CurrentUserResponse;
+import com.amyojiakor.userMicroService.models.payloads.CurrentUserDetailsResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
-import com.amyojiakor.userMicroService.services.UserService;
+import com.amyojiakor.userMicroService.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final UserService authenticationService;
+    private final AuthService authenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) throws Exception {
@@ -25,10 +25,4 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest authRequest) throws Exception {
         return ResponseEntity.ok(authenticationService.login(authRequest));
     }
-
-    @GetMapping("/get-current-user-details")
-    public ResponseEntity<CurrentUserResponse> getUser() throws Exception {
-        return ResponseEntity.ok(authenticationService.getCurrentUser());
-    }
-
 }
