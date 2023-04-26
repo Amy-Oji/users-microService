@@ -2,7 +2,6 @@ package com.amyojiakor.userMicroService.controller;
 
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
-import com.amyojiakor.userMicroService.models.payloads.CurrentUserDetailsResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
 import com.amyojiakor.userMicroService.services.AuthService;
 import lombok.RequiredArgsConstructor;

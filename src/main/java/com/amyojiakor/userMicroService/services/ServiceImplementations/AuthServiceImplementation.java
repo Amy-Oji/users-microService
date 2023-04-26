@@ -2,10 +2,8 @@ package com.amyojiakor.userMicroService.services.ServiceImplementations;
 
 import com.amyojiakor.userMicroService.models.entities.Roles;
 import com.amyojiakor.userMicroService.models.entities.User;
-import com.amyojiakor.userMicroService.models.entities.UserAccounts;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
-import com.amyojiakor.userMicroService.models.payloads.CurrentUserDetailsResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
 import com.amyojiakor.userMicroService.respositories.UserAccountRepository;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
@@ -15,12 +13,9 @@ import com.amyojiakor.userMicroService.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +26,6 @@ public class AuthServiceImplementation implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
-    private final UserAccountRepository userAccountRepository;
-
 
     @Override
     public AuthenticationResponse registerUser(RegisterRequest registerRequest) throws Exception {
