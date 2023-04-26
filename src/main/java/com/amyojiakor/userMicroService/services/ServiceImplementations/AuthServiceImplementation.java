@@ -13,6 +13,8 @@ import com.amyojiakor.userMicroService.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +88,18 @@ public class AuthServiceImplementation implements AuthService {
         } catch (Exception e) {
           throw new Exception ("incorrect username or password!");
         }
+    }
+
+    @Override
+    public User getCurrentUser() throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new Exception("User not authenticated");
+        }
+        UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
+
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new Exception("User not found"));
     }
 
     private static boolean isValidEmail(String email) {

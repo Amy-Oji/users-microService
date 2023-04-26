@@ -1,11 +1,11 @@
 package com.amyojiakor.userMicroService.services;
 
 import com.amyojiakor.userMicroService.models.payloads.AccountResponse;
-import com.amyojiakor.userMicroService.models.payloads.CurrentUserDetailsResponse;
-import com.amyojiakor.userMicroService.models.payloads.UpdateAccountRequest;
+import com.amyojiakor.userMicroService.models.payloads.UserDetailsResponse;
+import com.amyojiakor.userMicroService.models.payloads.UpdateUserDetailsDto;
 
 public interface UserService {
-    AccountResponse updateBankAccount(UpdateAccountRequest accountRequest);
-    CurrentUserDetailsResponse getCurrentUserDetails() throws Exception;
 
+    UserDetailsResponse getUserDetails() throws Exception;
+    UpdateUserDetailsDto updateUserDetails(UpdateUserDetailsDto updateUserDetailsDto) throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.amyojiakor.userMicroService.controller;
 
-import com.amyojiakor.userMicroService.models.payloads.CurrentUserDetailsResponse;
+import com.amyojiakor.userMicroService.models.payloads.UpdateUserDetailsDto;
+import com.amyojiakor.userMicroService.models.payloads.UserDetailsResponse;
 import com.amyojiakor.userMicroService.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +14,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/get-user-details")
-    public ResponseEntity<CurrentUserDetailsResponse> getUser() throws Exception {
-        return ResponseEntity.ok(userService.getCurrentUserDetails());
+    public ResponseEntity<UserDetailsResponse> getUser() throws Exception {
+        return ResponseEntity.ok(userService.getUserDetails());
     }
 
+    @PostMapping("/update-user")
+    public ResponseEntity<?> updateUserDetails(@RequestBody UpdateUserDetailsDto userDetailsDto) throws Exception {
+        return ResponseEntity.ok(userService.updateUserDetails(userDetailsDto));
+    }
 }
