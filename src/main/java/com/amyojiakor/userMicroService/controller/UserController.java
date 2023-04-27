@@ -14,7 +14,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/get-user-details")
-    public ResponseEntity<UserDetailsResponse> getUser() throws Exception {
+    public ResponseEntity<?> getUser() throws Exception {
         return ResponseEntity.ok(userService.getUserDetails());
     }
 

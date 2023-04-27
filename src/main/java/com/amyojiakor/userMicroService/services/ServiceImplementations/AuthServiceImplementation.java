@@ -5,7 +5,6 @@ import com.amyojiakor.userMicroService.models.entities.User;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
-import com.amyojiakor.userMicroService.respositories.UserAccountRepository;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
 import com.amyojiakor.userMicroService.security.jwt.JwtUtils;
 import com.amyojiakor.userMicroService.security.user.UserDetailsImplementation;
@@ -37,8 +36,7 @@ public class AuthServiceImplementation implements AuthService {
             throw new Exception("Invalid email signature. Please enter a valid email");
         }
 
-        var existingUser = userRepository.findByEmail(email);
-        if(existingUser.isPresent()){
+        if(userRepository.findByEmail(email).isPresent()){
             throw new Exception("You are already registered. Kindly login using this email");
         }
 
@@ -48,14 +46,9 @@ public class AuthServiceImplementation implements AuthService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(registerRequest.password()));
         user.setRole(Roles.USER);
-
         userRepository.save(user);
 
-        UserDetailsImplementation userDetails = new UserDetailsImplementation(user);
-        var jwt = jwtUtils.generateToken(userDetails);
-
         AuthenticationRequest authRequest = new AuthenticationRequest(email, registerRequest.password());
-
         return login(authRequest);
     }
 
