@@ -1,19 +1,26 @@
 package com.amyojiakor.userMicroService.services.ServiceImplementations;
 
 import com.amyojiakor.userMicroService.models.entities.User;
+import com.amyojiakor.userMicroService.models.entities.UserAccounts;
 import com.amyojiakor.userMicroService.models.payloads.*;
+import com.amyojiakor.userMicroService.respositories.UserAccountRepository;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
 import com.amyojiakor.userMicroService.services.AuthService;
 import com.amyojiakor.userMicroService.services.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImplementation implements UserService {
 
     private final UserRepository userRepository;
+
+    private final UserAccountRepository accountRepository;
 
     private final AuthService authService;
 
@@ -30,5 +37,16 @@ public class UserServiceImplementation implements UserService {
         BeanUtils.copyProperties(updateUserDetailsDto, user);
         userRepository.save(user);
         return updateUserDetailsDto;
+    }
+    @Transactional
+    @KafkaListener(topics = "${kafka.topic.account-creation}", groupId = "${spring.kafka.consumer.group-id}")
+    public void consume(AccountResponse accountResponse) throws Exception {
+       var user = userRepository.findByEmail(accountResponse.email()).orElseThrow(()-> new Exception("user with email: " + accountResponse.email() + " not found"));
+        UserAccounts accounts = new UserAccounts();
+        BeanUtils.copyProperties(accountResponse, accounts);
+        accounts.setUser(user);
+        System.out.println(accounts);
+        System.out.println(accountResponse);
+        accountRepository.save(accounts);
     }
 }

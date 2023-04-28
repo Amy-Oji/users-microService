@@ -1,6 +1,5 @@
 package com.amyojiakor.userMicroService.services;
 
-import com.amyojiakor.userMicroService.models.payloads.AccountResponse;
 import com.amyojiakor.userMicroService.models.payloads.UserDetailsResponse;
 import com.amyojiakor.userMicroService.models.payloads.UpdateUserDetailsDto;
 

@@ -1,7 +1,6 @@
 package com.amyojiakor.userMicroService.controller;
 
 import com.amyojiakor.userMicroService.models.payloads.UpdateUserDetailsDto;
-import com.amyojiakor.userMicroService.models.payloads.UserDetailsResponse;
 import com.amyojiakor.userMicroService.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
