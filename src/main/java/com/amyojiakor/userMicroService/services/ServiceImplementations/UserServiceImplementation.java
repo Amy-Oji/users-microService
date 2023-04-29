@@ -64,33 +64,28 @@ public class UserServiceImplementation implements UserService {
     }
     @Transactional
     @KafkaListener(topics = "${kafka.topic.account.transact}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "transactionListenerContainerFactory")
-    public void consume(TransactionMessage transactionMessage) throws Exception{
-        System.out.println(transactionMessage.toString());
+    public void consume(TransactionMessage transactionMessage) throws Exception {
+        TransactionMessageResponse transactionMessageResponse = processTransaction(transactionMessage);
+        kafkaTemplate.send(balanceUpdateTopic, transactionMessageResponse);
+    }
+
+    private TransactionMessageResponse processTransaction(TransactionMessage transactionMessage) throws Exception {
         TransactionMessageResponse transactionMessageResponse = new TransactionMessageResponse();
-        var account = accountRepository.findByAccountNumber(transactionMessage.accountNum());
-        if (account.isEmpty()){
-            transactionMessageResponse.setErrorMessage("Account Not Found");
-            transactionMessageResponse.setTransactionStatus(TransactionStatus.FAILED);
-            throw new Exception("Account Not Found");
+        var account = accountRepository.findByAccountNumber(transactionMessage.accountNum()).orElseThrow();
+        var balance = account.getAccountBalance();
+        if (transactionMessage.transactionType() == TransactionType.CREDIT) {
+            account.setAccountBalance(balance.add(transactionMessage.amount()));
         } else {
-            var balance = account.get().getAccountBalance();
-
-            if (transactionMessage.transactionType() == TransactionType.CREDIT) {
-                account.get().setAccountBalance(balance.add(transactionMessage.amount()));
-            } else {
-                if (transactionMessage.amount().compareTo(balance) > 0) {
-                    transactionMessageResponse.setTransactionStatus(TransactionStatus.FAILED);
-                    transactionMessageResponse.setErrorMessage("Insufficient Funds");
-                    throw new Exception("Insufficient Funds");
-                }
-                account.get().setAccountBalance(balance.subtract(transactionMessage.amount()));
+            if (transactionMessage.amount().compareTo(balance) > 0) {
+                transactionMessageResponse.setTransactionStatus(TransactionStatus.FAILED);
+                transactionMessageResponse.setErrorMessage("Insufficient Funds");
+                throw new Exception("Insufficient Funds");
             }
-            transactionMessageResponse.setTransactionStatus(TransactionStatus.COMPLETED);
-            transactionMessageResponse.setErrorMessage(null);
-            accountRepository.save(account.get());
-            System.out.println(account);
-
-            kafkaTemplate.send(balanceUpdateTopic, transactionMessageResponse);
+            account.setAccountBalance(balance.subtract(transactionMessage.amount()));
         }
+        transactionMessageResponse.setTransactionStatus(TransactionStatus.COMPLETED);
+        transactionMessageResponse.setErrorMessage(null);
+        accountRepository.save(account);
+        return transactionMessageResponse;
     }
 }
