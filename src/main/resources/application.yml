@@ -36,7 +36,10 @@ spring:
       FAIL_ON_EMPTY_BEANS: false
 kafka:
   topic:
-    account-creation: account-creation
+    account:
+      creation: account-creation
+      transact: transaction-creation
+      balance-update: balance-update
 
 myapp:
   jwt:

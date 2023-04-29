@@ -36,7 +36,6 @@ public class ApiConfig {
                 .build();
     }
 
-
     @Bean
     @LoadBalanced
     public WebClient transactionsServiceWebClient() {

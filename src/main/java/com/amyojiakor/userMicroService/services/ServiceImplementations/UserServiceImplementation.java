@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImplementation implements UserService {
@@ -39,7 +37,7 @@ public class UserServiceImplementation implements UserService {
         return updateUserDetailsDto;
     }
     @Transactional
-    @KafkaListener(topics = "${kafka.topic.account-creation}", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "${kafka.topic.account.creation}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "accountListenerContainerFactory" )
     public void consume(AccountResponse accountResponse) throws Exception {
        var user = userRepository.findByEmail(accountResponse.email()).orElseThrow(()-> new Exception("user with email: " + accountResponse.email() + " not found"));
         UserAccounts accounts = new UserAccounts();
@@ -48,5 +46,10 @@ public class UserServiceImplementation implements UserService {
         System.out.println(accounts);
         System.out.println(accountResponse);
         accountRepository.save(accounts);
+    }
+    @Transactional
+    @KafkaListener(topics = "${kafka.topic.account.transact}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "transactionListenerContainerFactory")
+    public void consume(TransactionMessage transactionMessage) {
+        System.out.println(transactionMessage.toString());
     }
 }

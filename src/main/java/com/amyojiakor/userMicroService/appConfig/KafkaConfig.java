@@ -1,6 +1,8 @@
 package com.amyojiakor.userMicroService.appConfig;
 
 import com.amyojiakor.userMicroService.models.payloads.AccountResponse;
+import com.amyojiakor.userMicroService.models.payloads.TransactionMessage;
+import com.amyojiakor.userMicroService.models.payloads.TransactionMessageResponse;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -27,10 +29,8 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
-
-
     @Bean
-    public ProducerFactory<String, AccountResponse> producerFactory() {
+    public ProducerFactory<String, TransactionMessageResponse> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -39,7 +39,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, AccountResponse> kafkaTemplate() {
+    public KafkaTemplate<String, TransactionMessageResponse> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
@@ -54,10 +54,19 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, AccountResponse> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, AccountResponse> accountListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, AccountResponse> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(consumerFactory(), new StringDeserializer(), new JsonDeserializer<>(AccountResponse.class, false)));
         return factory;
     }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, TransactionMessage> transactionListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, TransactionMessage> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(consumerFactory(), new StringDeserializer(), new JsonDeserializer<>(TransactionMessage.class, false)));
+        return factory;
+    }
+
 }
