@@ -39,7 +39,7 @@ kafka:
     account:
       creation: account-creation
       transact: transaction-creation
-      balance-update: balance-update
+      balance-update: user-service-balance-update
 
 myapp:
   jwt:
