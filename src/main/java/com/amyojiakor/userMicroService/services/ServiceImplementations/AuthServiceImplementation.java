@@ -5,6 +5,7 @@ import com.amyojiakor.userMicroService.models.entities.User;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
+import com.amyojiakor.userMicroService.models.payloads.UpdatePasswordDto;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
 import com.amyojiakor.userMicroService.security.jwt.JwtUtils;
 import com.amyojiakor.userMicroService.security.user.UserDetailsImplementation;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +85,21 @@ public class AuthServiceImplementation implements AuthService {
         }
     }
 
+    public void updatePassword(UpdatePasswordDto updatePasswordDto) throws Exception {
+        System.out.println("in implementation");
+
+        var currentUser = getCurrentUser2();
+        System.out.println(currentUser);
+        var user = userRepository.findByEmail(currentUser.getUsername()).orElseThrow(() -> new Exception("User not found"));
+
+        if (!passwordEncoder.matches(updatePasswordDto.currentPassword(), user.getPassword())) {
+            throw new Exception("Invalid current password");
+        }
+        user.setPassword(passwordEncoder.encode(updatePasswordDto.newPassword()));
+
+        userRepository.save(user);
+    }
+
     @Override
     public User getCurrentUser() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -94,6 +111,16 @@ public class AuthServiceImplementation implements AuthService {
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new Exception("User not found"));
     }
+
+
+    public UserDetails getCurrentUser2() throws Exception {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new Exception("User not authenticated");
+        }
+        return (UserDetails) authentication.getPrincipal();
+    }
+
 
     private static boolean isValidEmail(String email) {
         String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";

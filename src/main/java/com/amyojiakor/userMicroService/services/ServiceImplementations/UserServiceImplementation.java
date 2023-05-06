@@ -65,8 +65,10 @@ public class UserServiceImplementation implements UserService {
     @Transactional
     @KafkaListener(topics = "${kafka.topic.account.transact}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "transactionListenerContainerFactory")
     public void consume(TransactionMessage transactionMessage) throws Exception {
+        System.out.println(transactionMessage+ " === transactionMessage");
         TransactionMessageResponse transactionMessageResponse = processTransaction(transactionMessage);
         kafkaTemplate.send(balanceUpdateTopic, transactionMessageResponse);
+        System.out.println(transactionMessageResponse);
     }
 
     private TransactionMessageResponse processTransaction(TransactionMessage transactionMessage) throws Exception {
