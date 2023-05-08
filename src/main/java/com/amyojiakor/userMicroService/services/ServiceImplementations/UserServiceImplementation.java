@@ -30,7 +30,7 @@ public class UserServiceImplementation implements UserService {
     private final String balanceUpdateTopic;
 
    @Autowired
-    public UserServiceImplementation(UserRepository userRepository, UserAccountRepository accountRepository, AuthenticationService authenticationService, KafkaTemplate<String, TransactionMessageResponse> kafkaTemplate, @Value("${kafka.topic.account.balance-update}") String balanceUpdateTopic) {
+    public UserServiceImplementation(UserRepository userRepository, UserAccountRepository accountRepository, AuthenticationService authenticationService, KafkaTemplate<String, TransactionMessageResponse> kafkaTemplate, @Value("${kafka.topic.transaction.balance-update}") String balanceUpdateTopic) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.authenticationService = authenticationService;
@@ -63,7 +63,7 @@ public class UserServiceImplementation implements UserService {
         accountRepository.save(accounts);
     }
     @Transactional
-    @KafkaListener(topics = "${kafka.topic.account.transact}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "transactionListenerContainerFactory")
+    @KafkaListener(topics = "${kafka.topic.transaction.transact}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "transactionListenerContainerFactory")
     public void consume(TransactionMessage transactionMessage) throws Exception {
         System.out.println(transactionMessage+ " === transactionMessage");
         TransactionMessageResponse transactionMessageResponse = processTransaction(transactionMessage);

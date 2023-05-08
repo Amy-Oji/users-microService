@@ -38,6 +38,7 @@ kafka:
   topic:
     account:
       creation: account-creation
+    transaction:
       transact: transaction-creation
       balance-update: user-service-balance-update
 
