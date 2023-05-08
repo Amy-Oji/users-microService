@@ -2,20 +2,16 @@ package com.amyojiakor.userMicroService.services.ServiceImplementations;
 
 import com.amyojiakor.userMicroService.models.entities.Roles;
 import com.amyojiakor.userMicroService.models.entities.User;
-import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
-import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
-import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
-import com.amyojiakor.userMicroService.models.payloads.UpdatePasswordDto;
+import com.amyojiakor.userMicroService.models.payloads.*;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
 import com.amyojiakor.userMicroService.security.jwt.JwtUtils;
 import com.amyojiakor.userMicroService.security.user.UserDetailsImplementation;
-import com.amyojiakor.userMicroService.services.AuthService;
+import com.amyojiakor.userMicroService.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +20,7 @@ import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Service
-public class AuthServiceImplementation implements AuthService {
+public class AuthenticationServiceImplementation implements AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
@@ -57,40 +53,32 @@ public class AuthServiceImplementation implements AuthService {
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws Exception {
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            authenticationRequest.email(),
-                            authenticationRequest.password()
-                    )
-            );
+                            authenticationRequest.email(), authenticationRequest.password()));
 
-            var user = userRepository.findByEmail(authenticationRequest.email())
+            User user = userRepository.findByEmail(authenticationRequest.email())
                     .orElseThrow(() -> new Exception("User not found"));
 
             UserDetailsImplementation userDetails = new UserDetailsImplementation(user);
 
-            System.out.println(userDetails);
+            String jwt = jwtUtils.generateToken(userDetails);
 
-            var jwt = jwtUtils.generateToken(userDetails);
             return AuthenticationResponse
                     .builder()
                     .token(jwt)
                     .role(user.getRole().name())
                     .build();
-
         } catch (Exception e) {
           throw new Exception ("incorrect username or password!");
         }
     }
 
-    public void updatePassword(UpdatePasswordDto updatePasswordDto) throws Exception {
-        System.out.println("in implementation");
+    public PasswordUpdateResponse updatePassword(UpdatePasswordDto updatePasswordDto) throws Exception {
+        User currentUser = getCurrentUser();
 
-        var currentUser = getCurrentUser2();
-        System.out.println(currentUser);
-        var user = userRepository.findByEmail(currentUser.getUsername()).orElseThrow(() -> new Exception("User not found"));
+        User user = userRepository.findByEmail(currentUser.getEmail()).orElseThrow(() -> new Exception("User not found"));
 
         if (!passwordEncoder.matches(updatePasswordDto.currentPassword(), user.getPassword())) {
             throw new Exception("Invalid current password");
@@ -98,6 +86,7 @@ public class AuthServiceImplementation implements AuthService {
         user.setPassword(passwordEncoder.encode(updatePasswordDto.newPassword()));
 
         userRepository.save(user);
+        return new PasswordUpdateResponse("Password update successful");
     }
 
     @Override
@@ -111,16 +100,6 @@ public class AuthServiceImplementation implements AuthService {
         return userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new Exception("User not found"));
     }
-
-
-    public UserDetails getCurrentUser2() throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new Exception("User not authenticated");
-        }
-        return (UserDetails) authentication.getPrincipal();
-    }
-
 
     private static boolean isValidEmail(String email) {
         String regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";

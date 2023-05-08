@@ -4,7 +4,7 @@ import com.amyojiakor.userMicroService.models.payloads.AuthenticationRequest;
 import com.amyojiakor.userMicroService.models.payloads.AuthenticationResponse;
 import com.amyojiakor.userMicroService.models.payloads.RegisterRequest;
 import com.amyojiakor.userMicroService.models.payloads.UpdatePasswordDto;
-import com.amyojiakor.userMicroService.services.AuthService;
+import com.amyojiakor.userMicroService.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private final AuthService authenticationService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) throws Exception {
@@ -26,8 +26,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(authenticationService.login(authRequest));
     }
     @PostMapping("/update-password")
-    public void updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
-        System.out.println("in controller");
-        authenticationService.updatePassword(updatePasswordDto);
+    public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
+        return ResponseEntity.ok(authenticationService.updatePassword(updatePasswordDto));
     }
 }

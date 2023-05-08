@@ -7,11 +7,11 @@ import com.amyojiakor.userMicroService.models.enums.TransactionType;
 import com.amyojiakor.userMicroService.models.payloads.*;
 import com.amyojiakor.userMicroService.respositories.UserAccountRepository;
 import com.amyojiakor.userMicroService.respositories.UserRepository;
-import com.amyojiakor.userMicroService.services.AuthService;
+import com.amyojiakor.userMicroService.services.AuthenticationService;
 import com.amyojiakor.userMicroService.services.UserService;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,34 +23,34 @@ public class UserServiceImplementation implements UserService {
 
     private final UserAccountRepository accountRepository;
 
-    private final AuthService authService;
+    private final AuthenticationService authenticationService;
 
     private final KafkaTemplate<String, TransactionMessageResponse> kafkaTemplate;
 
     private final String balanceUpdateTopic;
 
-    public UserServiceImplementation(UserRepository userRepository, UserAccountRepository accountRepository, AuthService authService, KafkaTemplate<String, TransactionMessageResponse> kafkaTemplate, @Value("${kafka.topic.account.balance-update}") String balanceUpdateTopic) {
+   @Autowired
+    public UserServiceImplementation(UserRepository userRepository, UserAccountRepository accountRepository, AuthenticationService authenticationService, KafkaTemplate<String, TransactionMessageResponse> kafkaTemplate, @Value("${kafka.topic.account.balance-update}") String balanceUpdateTopic) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
-        this.authService = authService;
+        this.authenticationService = authenticationService;
         this.kafkaTemplate = kafkaTemplate;
         this.balanceUpdateTopic = balanceUpdateTopic;
     }
 
     public UserDetailsResponse getUserDetails() throws Exception {
-        User user = authService.getCurrentUser();
+        User user = authenticationService.getCurrentUser();
         return new UserDetailsResponse(user.getFirstName(), user.getLastName(), user.getEmail(),  user.getAccounts());
     }
 
-//    Todo:
-//    update updateUserDetails method... it accepts null email value which should not be.
     @Override
     public UpdateUserDetailsDto updateUserDetails(UpdateUserDetailsDto updateUserDetailsDto) throws Exception {
-        User user = authService.getCurrentUser();
+        User user = authenticationService.getCurrentUser();
         BeanUtils.copyProperties(updateUserDetailsDto, user);
         userRepository.save(user);
         return updateUserDetailsDto;
     }
+
     @Transactional
     @KafkaListener(topics = "${kafka.topic.account.creation}", groupId = "${spring.kafka.consumer.group-id}", containerFactory = "accountListenerContainerFactory" )
     public void consume(AccountResponse accountResponse) throws Exception {
